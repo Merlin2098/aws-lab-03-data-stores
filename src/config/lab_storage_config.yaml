@@ -1,0 +1,15 @@
+# Populated from `terraform output -json` after `terraform apply` in infra/.
+# Replace the placeholder values below with your own deployment's outputs.
+# Do not hardcode these values in scripts/*.py — read them from this file.
+
+datalake_bucket_name: data-platform-dev-184670914470-datalake
+datalake_raw_prefix: raw/events/
+datalake_curated_prefix: curated/events/
+
+dynamodb_table_name: package_tracking
+
+athena_database_name: data_platform_dev_events
+athena_table_name: tracking_events
+athena_workgroup_name: data-platform-dev-lab-workgroup
+
+schema_path: src/transformations/lab_storage_schema.sql

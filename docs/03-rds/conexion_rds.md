@@ -54,6 +54,13 @@ tienes que pegarlos a mano):
 psql "host=<tu-endpoint>.rds.amazonaws.com port=5432 dbname=logistics user=lab_admin password=<tu-password>"
 ```
 
+`dbname=logistics` y `user=lab_admin` son los valores por defecto de
+`rds_db_name`/`rds_db_username` en
+[infra/variables.tf](../../infra/variables.tf) — si no los cambiaste en
+tu `terraform.tfvars`, solo necesitas reemplazar `<tu-endpoint>` y
+`<tu-password>` en el comando de arriba. Si sí los cambiaste, usa los
+valores que definiste ahí en vez de `logistics`/`lab_admin`.
+
 Al conectar, el prompt cambia a `<db>=>` (ej. `logistics=>`) — ya estás
 dentro.
 

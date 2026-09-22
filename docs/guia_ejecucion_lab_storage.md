@@ -245,15 +245,15 @@ Vuelve a la raíz del repo y edita `src/config/lab_storage_config.yaml`.
 Reemplaza cada placeholder `REPLACE-WITH-terraform-output-...` con el
 valor correspondiente que arrojó `terraform output` en el paso anterior:
 
-| Campo en el YAML           | Output de Terraform      |
-|-----------------------------|---------------------------|
-| `datalake_bucket_name`      | `datalake_bucket_name`    |
-| `rds_endpoint`               | `rds_endpoint`             |
-| `rds_db_name`                 | `rds_db_name`               |
-| `dynamodb_table_name`        | `dynamodb_table_name`      |
-| `athena_database_name`       | `athena_database_name`     |
-| `athena_table_name`           | `athena_table_name`         |
-| `athena_workgroup_name`      | `athena_workgroup_name`    |
+| Campo en el YAML          | Output de Terraform       |
+| ------------------------- | ------------------------- |
+| `datalake_bucket_name`  | `datalake_bucket_name`  |
+| `rds_endpoint`          | `rds_endpoint`          |
+| `rds_db_name`           | `rds_db_name`           |
+| `dynamodb_table_name`   | `dynamodb_table_name`   |
+| `athena_database_name`  | `athena_database_name`  |
+| `athena_table_name`     | `athena_table_name`     |
+| `athena_workgroup_name` | `athena_workgroup_name` |
 
 Luego completa en `.env.credentials` las variables de conexión a RDS:
 
@@ -390,6 +390,42 @@ RDS sin perder el resto de la infraestructura, puedes eliminar únicamente
 el módulo `rds` de `infra/main.tf` temporalmente y aplicar — pero lo más
 simple y predecible para un laboratorio es destruir todo y volver a
 desplegar cuando retomes.
+
+### 9.1. Log group de RDS: bórralo manualmente, no esperes que `destroy` lo haga
+
+Por la misma condición de carrera descrita en la sección 3.2, el log
+group `/aws/rds/instance/<name_prefix>-lab-db/postgresql` casi nunca
+termina gestionado por Terraform: RDS lo crea por su cuenta apenas
+empieza a exportar logs, antes de que Terraform pueda crear el suyo. Esto
+es cierto tanto si hiciste el `terraform import` de la sección 3.2 como
+si no — en ambos casos, `terraform destroy` no se puede confiar para
+eliminarlo (si nunca lo importaste, ni siquiera está en el state y
+`destroy` lo ignora por completo; si lo importaste, sí lo borra, pero
+solo por esa única vez).
+
+En la práctica, para este laboratorio el log group siempre queda como un
+recurso manual: trátalo como tal en vez de depender de Terraform para
+limpiarlo. Después de `terraform destroy`, bórralo a mano si ya
+terminaste con el laboratorio:
+
+```bash
+aws logs delete-log-group \
+  --log-group-name "/aws/rds/instance/<name_prefix>-lab-db/postgresql"
+```
+
+Sustituye `<name_prefix>` igual que en la sección 3.2
+(`${project_name}-${environment}`, p. ej. `data-platform-dev-lab-db` con
+los valores del `.example`). Es un borrado manual fuera de Terraform —
+según AGENTS.md, el borrado de CloudWatch log groups requiere
+confirmación explícita, así que confirma antes de correr el comando que
+es el log group correcto (y que no lo necesitas para revisar una corrida
+anterior).
+
+Si vas a volver a desplegar pronto, no hace falta borrarlo: el log group
+huérfano no estorba, y al recrear la instancia RDS, esta reutiliza (o
+recrea) el mismo log group por su cuenta — no requiere ninguna acción de
+tu parte ni un nuevo `terraform import` a menos que quieras que Terraform
+gestione `retention_in_days`/tags sobre él otra vez.
 
 ---
 

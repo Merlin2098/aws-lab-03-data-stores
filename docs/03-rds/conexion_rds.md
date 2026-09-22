@@ -18,12 +18,12 @@ visual en vez de la terminal, ver [pgadmin.md](pgadmin.md).
 Los cuatro valores que necesitas viven en tu `.env.credentials`
 (gitignored, nunca se commitea):
 
-| Variable | Origen |
-|---|---|
-| `RDS_ENDPOINT` | `terraform output rds_endpoint` (incluye `host:puerto`) |
-| `RDS_DB_NAME` | `terraform output rds_db_name` |
-| `RDS_USERNAME` | el que definiste en `terraform.tfvars` (`rds_db_username`, default `lab_admin`) |
-| `RDS_PASSWORD` | el mismo valor que pusiste en `rds_db_password` |
+| Variable         | Origen                                                                               |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| `RDS_ENDPOINT` | `terraform output rds_endpoint` (incluye `host:puerto`)                          |
+| `RDS_DB_NAME`  | `terraform output rds_db_name`                                                     |
+| `RDS_USERNAME` | el que definiste en`terraform.tfvars` (`rds_db_username`, default `lab_admin`) |
+| `RDS_PASSWORD` | el mismo valor que pusiste en`rds_db_password`                                     |
 
 Carga esas variables a tu sesión de terminal (Git Bash):
 
